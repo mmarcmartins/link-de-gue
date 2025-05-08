@@ -11,7 +11,9 @@ import (
 )
 
 func handleHealth(writer http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(writer, "Service is running properly")
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusOK)
+	writer.Write([]byte(`{"status":"healthy","message":"Service is running properly"}`))
 }
 
 func handleGetOriginalLink(writer http.ResponseWriter, req *http.Request) {
