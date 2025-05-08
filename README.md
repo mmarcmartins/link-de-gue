@@ -43,7 +43,7 @@ PORT=3001
 
 3. Run the application:
    ```
-   go run main.go
+   go run .
    ```
 
 The server will start on the port specified in your `.env` file (default: 3001).
