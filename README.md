@@ -25,7 +25,6 @@ Create a `.env` file in the root directory with the following variables:
 DB_USER=your_mongodb_username
 DB_PASSWORD=your_mongodb_password
 DB_CLUSTER=your_mongodb_cluster
-DOMAIN=your_domain_with_trailing_slash (e.g., http://short.link/)
 PORT=3001
 ```
 
