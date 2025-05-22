@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/rs/cors"
 	"golang.org/x/time/rate"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -126,15 +127,23 @@ func init() {
 }
 
 func main() {
+	mux := http.NewServeMux()
 	port := os.Getenv("PORT")
 	fmt.Println("Starting url shortener service")
 
-	http.HandleFunc("GET /health", handleHealth)
+	mux.HandleFunc("GET /health", handleHealth)
 
-	http.HandleFunc("GET /{id}", handleGetOriginalLink)
+	mux.HandleFunc("GET /{id}", handleGetOriginalLink)
 
-	http.HandleFunc("POST /shorten", handleShorten)
+	mux.HandleFunc("POST /shorten", handleShorten)
 
 	fmt.Println("Starting server on port", port)
-	http.ListenAndServe(":"+port, nil)
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:*"},
+		AllowCredentials: true,
+	})
+
+	handler := c.Handler(mux)
+	http.ListenAndServe(":"+port, handler)
 }

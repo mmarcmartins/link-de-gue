@@ -25,17 +25,20 @@ func handleGetOriginalLink(writer http.ResponseWriter, req *http.Request) {
 		redirectUrl, err := getShortLink(coll, id)
 
 		if err != nil && err != mongo.ErrNoDocuments {
+			fmt.Println("Redirect link not found")
 			http.NotFound(writer, req)
 			return
 		}
 
 		if redirectUrl != nil {
+			fmt.Println("Redirecting to link:", redirectUrl)
 			http.Redirect(writer, req, redirectUrl.OriginalLink, http.StatusFound)
 			return
 		}
 	})
 
 	if rateLimited {
+		fmt.Println("Rate limite exceeded")
 		http.Error(writer, "Rate limit exceeded", http.StatusTooManyRequests)
 		return
 	}
@@ -46,7 +49,6 @@ func handleShorten(writer http.ResponseWriter, req *http.Request) {
 	rateLimited := limiting(ip, func() {
 		writer.Header().Set("Content-Type", "application/json")
 		var body ShortenBody
-
 		err := json.NewDecoder(req.Body).Decode(&body)
 
 		if err != nil {
@@ -81,6 +83,7 @@ func handleShorten(writer http.ResponseWriter, req *http.Request) {
 		}
 
 		if duplicateLink != nil {
+			fmt.Println("Duplicated link", body.OriginalUrl)
 			response := ShortenResponse{
 				Success:      true,
 				OriginalURL:  duplicateLink.OriginalLink,
@@ -105,7 +108,7 @@ func handleShorten(writer http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		fmt.Printf("Inserted document with _id: %v\n", result.InsertedID)
+		fmt.Printf("Success created shorten link %v\n", result.InsertedID)
 
 		response := ShortenResponse{
 			Success:      true,
